@@ -67,3 +67,4 @@ frontend/build/
 # Backend
 backend/__pycache__/
 backend/**/__pycache__/
+.vercel
