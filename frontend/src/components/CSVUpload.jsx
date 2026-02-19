@@ -126,7 +126,11 @@ const CSVUpload = ({ onDetectionComplete, onError, onLoading, onTransactionsLoad
     onError(null)
 
     try {
-      const response = await axios.post('/api/detect', formData, {
+      const apiEndpoint = import.meta.env.MODE === 'development'
+        ? 'http://localhost:8000/api/detect'
+        : '/api/detect'
+
+      const response = await axios.post(apiEndpoint, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
