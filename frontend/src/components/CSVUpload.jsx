@@ -126,9 +126,10 @@ const CSVUpload = ({ onDetectionComplete, onError, onLoading, onTransactionsLoad
     onError(null)
 
     try {
-      const apiEndpoint = import.meta.env.MODE === 'development'
-        ? 'http://localhost:8000/api/detect'
-        : '/api/detect'
+      // Use `VITE_API_URL` when provided (set in Render or other host),
+      // fall back to relative `/api/detect` so same-origin hosting still works.
+      const baseUrl = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'development' ? 'http://localhost:8000' : '')
+      const apiEndpoint = `${baseUrl}/api/detect`.replace('//api', '/api')
 
       const response = await axios.post(apiEndpoint, formData, {
         headers: {
