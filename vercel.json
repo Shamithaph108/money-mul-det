@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
+  "functions": {
+    "api/detect.py": {
+      "runtime": "python3.11",
+      "maxDuration": 60
+    }
+  }
+}
