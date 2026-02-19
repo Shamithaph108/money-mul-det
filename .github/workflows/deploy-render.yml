@@ -2,7 +2,7 @@ name: Deploy to Render
 
 on:
   push:
-    branches: [ deploy/render ]
+    branches: [ deploy/render, main ]
 
 env:
   RENDER_API_URL: https://api.render.com

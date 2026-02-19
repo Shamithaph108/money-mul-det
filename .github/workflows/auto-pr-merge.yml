@@ -1,0 +1,59 @@
+name: Auto PR and Merge deploy/render → main
+
+on:
+  push:
+    branches: [ deploy/render ]
+
+jobs:
+  create-and-merge-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create PR and merge into main
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const head = 'deploy/render'
+            const base = 'main'
+            // Check for existing PR
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${head}`,
+              base: base,
+              state: 'open'
+            })
+
+            if (pulls.length === 0) {
+              const pr = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head: head,
+                base: base,
+                title: 'Deploy: add Render manifest, CI and prod config',
+                body: `Auto-created PR to merge deploy/render into main for deployment. See deploy/render branch.`
+              })
+
+              // Merge the PR
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.data.number,
+                merge_method: 'squash'
+              })
+            } else {
+              // If PR exists, merge it
+              const pr = pulls[0]
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                merge_method: 'squash'
+              })
+            }
